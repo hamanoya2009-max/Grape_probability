@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブドウ逆算</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e10;
+    --bg2: #18181c;
+    --bg3: #222228;
+    --border: #2e2e36;
+    --text: #f0f0f5;
+    --text2: #b0b0c0;
+    --text3: #707080;
+    --accent: #7ee8a2;
+    --accent2: #3ecf70;
+    --accent-dim: rgba(126,232,162,0.12);
+    --gold: #ffd166;
+    --red: #ff6b6b;
+    --highlight: rgba(126,232,162,0.18);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .back-btn {
+    color: var(--text3);
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--accent); }
+
+  .header-info { flex: 1; }
+
+  .machine-series {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .machine-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  /* INPUT SECTION */
+  .input-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.2rem;
+  }
+
+  .input-field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .input-field input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 16px;
+    color: var(--text);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .input-field input:focus {
+    border-color: var(--accent);
+  }
+
+  .input-field input::placeholder {
+    color: var(--text3);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-calc {
+    flex: 1;
+    background: var(--accent);
+    color: #0e0e10;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-calc:active { transform: scale(0.97); }
+  .btn-calc:hover { background: var(--accent2); }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .btn-reset:hover {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  /* RESULT SECTION */
+  .result-section {
+    display: none;
+  }
+
+  .result-section.show {
+    display: block;
+  }
+
+  .result-main {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+
+  .result-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .result-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 52px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .result-raw {
+    font-size: 13px;
+    color: var(--text3);
+  }
+
+  /* SETTING TABLE */
+  .table-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+  }
+
+  .table-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  td {
+    padding: 11px 16px;
+    font-size: 14px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr.highlight td {
+    background: var(--highlight);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  tr.highlight td:first-child::before {
+    content: '▶ ';
+    color: var(--accent);
+  }
+
+  .bar-cell { width: 120px; }
+
+  .bar-bg {
+    background: var(--bg3);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--border);
+    transition: width 0.4s ease;
+  }
+
+  tr.highlight .bar-fill {
+    background: var(--accent);
+  }
+
+  /* DETAIL SECTION */
+  .detail-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+
+  .detail-key { color: var(--text3); }
+  .detail-val { color: var(--text2); font-family: 'Oswald', sans-serif; font-size: 15px; letter-spacing: 0.03em; }
+
+  .error-msg {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-btn" href="index.html">←</a>
+  <div class="header-info">
+    <div class="machine-series">6号機</div>
+    <div class="machine-name" id="machineName">-</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- INPUT -->
+  <div class="input-section">
+    <p class="section-label">データ入力</p>
+    <div class="input-grid">
+      <div class="input-field">
+        <label>総回転数</label>
+        <input type="number" id="totalGames" placeholder="例: 3000" inputmode="numeric">
+      </div>
+      <div class="input-field">
+        <label>差枚数</label>
+        <input type="number" id="diffCoins" placeholder="例: -500" inputmode="numeric">
+      </div>
+      <div class="input-field">
+        <label>BIG回数</label>
+        <input type="number" id="bigCount" placeholder="例: 10" inputmode="numeric">
+      </div>
+      <div class="input-field">
+        <label>REG回数</label>
+        <input type="number" id="regCount" placeholder="例: 8" inputmode="numeric">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-calc" onclick="calculate()">逆算する</button>
+      <button class="btn-reset" onclick="resetAll()">リセット</button>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- RESULT -->
+  <div class="result-section" id="resultSection">
+
+    <div class="result-main">
+      <div class="result-label">逆算ブドウ確率</div>
+      <div class="result-value" id="grapeResult">1/6.00</div>
+      <div class="result-raw" id="grapeRaw"></div>
+    </div>
+
+    <div class="table-section">
+      <div class="table-header">
+        <p class="section-label" style="margin:0">設定別ブドウ確率</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>設定</th>
+            <th>ブドウ確率</th>
+            <th class="bar-cell"></th>
+          </tr>
+        </thead>
+        <tbody id="settingTable"></tbody>
+      </table>
+    </div>
+
+    <div class="detail-section">
+      <p class="section-label">計算内訳</p>
+      <div class="detail-row">
+        <span class="detail-key">投入枚数</span>
+        <span class="detail-val" id="d-insert">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">ボーナス純増</span>
+        <span class="detail-val" id="d-bonus">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">小役合計獲得</span>
+        <span class="detail-val" id="d-yakuTotal">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">リプレイ獲得推定</span>
+        <span class="detail-val" id="d-replay">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">チェリー獲得推定</span>
+        <span class="detail-val" id="d-cherry">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">ブドウ獲得推定</span>
+        <span class="detail-val" id="d-grape">-</span>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+const MACHINES = {
+  neo_aim: {
+    name: 'ネオアイムジャグラー',
+    bigBonus: 252,
+    regBonus: 96,
+    grapeCoins: 8,
+    replayProb: 1 / 7.298,
+    cherryProb: 1 / 33.2,
+    settings: [
+      { label: '1', prob: 1 / 6.02408 },
+      { label: '2', prob: 1 / 6.02408 },
+      { label: '3', prob: 1 / 6.02408 },
+      { label: '4', prob: 1 / 6.02408 },
+      { label: '5', prob: 1 / 6.02408 },
+      { label: '6', prob: 1 / 5.84777 },
+    ]
+  },
+  go_go: {
+    name: 'ゴーゴージャグラー3',
+    bigBonus: 240,
+    regBonus: 96,
+    grapeCoins: 8,
+    replayProb: 1 / 7.298,
+    cherryProb: 1 / 32.2,
+    settings: [
+      { label: '1', prob: 1 / 6.24986 },
+      { label: '2', prob: 1 / 6.20019 },
+      { label: '3', prob: 1 / 6.15015 },
+      { label: '4', prob: 1 / 6.06983 },
+      { label: '5', prob: 1 / 5.99982 },
+      { label: '6', prob: 1 / 5.92014 },
+    ]
+  },
+  my_jag: {
+    name: 'マイジャグラー5',
+    bigBonus: 240,
+    regBonus: 96,
+    grapeCoins: 8,
+    replayProb: 1 / 7.298,
+    cherryProb: 1 / 34.0,
+    settings: [
+      { label: '1', prob: 1 / 5.91000 },
+      { label: '2', prob: 1 / 5.86977 },
+      { label: '3', prob: 1 / 5.83009 },
+      { label: '4', prob: 1 / 5.80016 },
+      { label: '5', prob: 1 / 5.75989 },
+      { label: '6', prob: 1 / 5.67019 },
+    ]
+  },
+  mr_jag: {
+    name: 'ミスタージャグラー',
+    bigBonus: 240,
+    regBonus: 96,
+    grapeCoins: 8,
+    replayProb: 1 / 7.298,
+    cherryProb: 1 / 37.236,
+    settings: [
+      { label: '1', prob: 1 / 6.24212 },
+      { label: '2', prob: 1 / 6.18381 },
+      { label: '3', prob: 1 / 6.13690 },
+      { label: '4', prob: 1 / 6.09807 },
+      { label: '5', prob: 1 / 6.05973 },
+      { label: '6', prob: 1 / 6.01689 },
+    ]
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const machineId = params.get('id') || 'neo_aim';
+const machine = MACHINES[machineId] || MACHINES['neo_aim'];
+
+document.getElementById('machineName').textContent = machine.name;
+document.title = machine.name + ' - ブドウ逆算';
+
+const STORAGE_KEY = 'juggler_' + machineId;
+
+// Load saved values
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.totalGames) document.getElementById('totalGames').value = data.totalGames;
+      if (data.diffCoins !== undefined) document.getElementById('diffCoins').value = data.diffCoins;
+      if (data.bigCount) document.getElementById('bigCount').value = data.bigCount;
+      if (data.regCount) document.getElementById('regCount').value = data.regCount;
+      if (data.totalGames && data.bigCount !== undefined && data.regCount !== undefined && data.diffCoins !== undefined) {
+        calculate();
+      }
+    } catch(e) {}
+  }
+});
+
+function calculate() {
+  const totalGames = parseFloat(document.getElementById('totalGames').value);
+  const diffCoins  = parseFloat(document.getElementById('diffCoins').value);
+  const bigCount   = parseFloat(document.getElementById('bigCount').value);
+  const regCount   = parseFloat(document.getElementById('regCount').value);
+
+  const errEl = document.getElementById('errorMsg');
+  errEl.classList.remove('show');
+
+  if (isNaN(totalGames) || isNaN(diffCoins) || isNaN(bigCount) || isNaN(regCount)) {
+    errEl.textContent = '全ての項目を入力してください';
+    errEl.classList.add('show');
+    document.getElementById('resultSection').classList.remove('show');
+    return;
+  }
+  if (totalGames <= 0) {
+    errEl.textContent = '総回転数は1以上を入力してください';
+    errEl.classList.add('show');
+    return;
+  }
+
+  // Save to localStorage
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalGames, diffCoins, bigCount, regCount }));
+
+  // Calculation
+  const insert       = totalGames * 3;
+  const bonusGain    = bigCount * machine.bigBonus + regCount * machine.regBonus;
+  const yakuTotal    = insert - diffCoins - bonusGain;
+  const replayGain   = (totalGames * machine.replayProb) * 3;
+  const cherryGain   = (totalGames * machine.cherryProb) * 1;
+  const grapeGain    = yakuTotal - replayGain - cherryGain;
+
+  if (grapeGain <= 0) {
+    errEl.textContent = 'ブドウ獲得枚数が計算できませんでした。入力値を確認してください。';
+    errEl.classList.add('show');
+    document.getElementById('resultSection').classList.remove('show');
+    return;
+  }
+
+  const grapeCount = grapeGain / machine.grapeCoins;
+  const grapeRate  = totalGames / grapeCount;
+
+  // Display result
+  document.getElementById('grapeResult').textContent = '1/' + grapeRate.toFixed(2);
+  document.getElementById('grapeRaw').textContent = '推定ブドウ回数: ' + Math.round(grapeCount) + '回';
+
+  document.getElementById('d-insert').textContent   = Math.round(insert).toLocaleString() + '枚';
+  document.getElementById('d-bonus').textContent    = Math.round(bonusGain).toLocaleString() + '枚';
+  document.getElementById('d-yakuTotal').textContent= Math.round(yakuTotal).toLocaleString() + '枚';
+  document.getElementById('d-replay').textContent   = Math.round(replayGain).toLocaleString() + '枚';
+  document.getElementById('d-cherry').textContent   = Math.round(cherryGain).toLocaleString() + '枚';
+  document.getElementById('d-grape').textContent    = Math.round(grapeGain).toLocaleString() + '枚';
+
+  // Setting table
+  buildTable(grapeRate);
+
+  document.getElementById('resultSection').classList.add('show');
+}
+
+function buildTable(grapeRate) {
+  const tbody = document.getElementById('settingTable');
+  tbody.innerHTML = '';
+
+  const probs = machine.settings.map(s => s.prob);
+  const minProb = Math.min(...probs);
+  const maxProb = Math.max(...probs);
+
+  // Find closest setting
+  let closestIdx = 0;
+  let minDiff = Infinity;
+  const calcProb = 1 / grapeRate;
+  machine.settings.forEach((s, i) => {
+    const diff = Math.abs(s.prob - calcProb);
+    if (diff < minDiff) { minDiff = diff; closestIdx = i; }
+  });
+
+  machine.settings.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    if (i === closestIdx) tr.classList.add('highlight');
+
+    const rateVal = 1 / s.prob;
+    const barPct = ((s.prob - minProb) / (maxProb - minProb) * 60 + 30).toFixed(1);
+
+    tr.innerHTML = `
+      <td>設定${s.label}</td>
+      <td>1/${rateVal.toFixed(3)}</td>
+      <td class="bar-cell">
+        <div class="bar-bg">
+          <div class="bar-fill" style="width:${barPct}%"></div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function resetAll() {
+  document.getElementById('totalGames').value = '';
+  document.getElementById('diffCoins').value = '';
+  document.getElementById('bigCount').value = '';
+  document.getElementById('regCount').value = '';
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('errorMsg').classList.remove('show');
+  localStorage.removeItem(STORAGE_KEY);
+}
+</script>
+
+</body>
+</html>
