@@ -89,12 +89,12 @@ function calculate() {
 
   localStorage.setItem('juggler_' + MACHINE_ID, JSON.stringify({ totalGames, diffCoins, bigCount, regCount }));
 
-  const insert     = totalGames * 3;
-  const bonusGain  = bigCount * machine.bigBonus + regCount * machine.regBonus;
-  const yakuTotal  = insert - diffCoins - bonusGain;
-  const replayGain = (totalGames * machine.replayProb) * 3;
-  const cherryGain = (totalGames * machine.cherryProb) * 1;
-  const grapeGain  = yakuTotal - replayGain - cherryGain;
+  const insert      = totalGames * 3;
+  const totalPayout = insert + diffCoins;
+  const bonusGain   = bigCount * machine.bigBonus + regCount * machine.regBonus;
+  const replayGain  = (totalGames * machine.replayProb) * 3;
+  const cherryGain  = (totalGames * machine.cherryProb) * 1;
+  const grapeGain   = totalPayout - bonusGain - replayGain - cherryGain;
 
   if (grapeGain <= 0) {
     errEl.textContent = 'ブドウ獲得枚数が計算できませんでした。入力値を確認してください。';
@@ -111,7 +111,7 @@ function calculate() {
 
   document.getElementById('d-insert').textContent    = Math.round(insert).toLocaleString() + '枚';
   document.getElementById('d-bonus').textContent     = Math.round(bonusGain).toLocaleString() + '枚';
-  document.getElementById('d-yakuTotal').textContent = Math.round(yakuTotal).toLocaleString() + '枚';
+  document.getElementById('d-yakuTotal').textContent = Math.round(totalPayout).toLocaleString() + '枚';
   document.getElementById('d-replay').textContent    = Math.round(replayGain).toLocaleString() + '枚';
   document.getElementById('d-cherry').textContent    = Math.round(cherryGain).toLocaleString() + '枚';
   document.getElementById('d-grape').textContent     = Math.round(grapeGain).toLocaleString() + '枚';
