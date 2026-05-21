@@ -3,245 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ジャグラー ブドウ逆算ツール</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0e0e10;
-    --bg2: #18181c;
-    --bg3: #222228;
-    --border: #2e2e36;
-    --text: #f0f0f5;
-    --text2: #b0b0c0;
-    --text3: #707080;
-    --accent: #7ee8a2;
-    --accent2: #3ecf70;
-    --accent-dim: rgba(126,232,162,0.12);
-    --gold: #ffd166;
-    --red: #ff6b6b;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
-    min-height: 100vh;
-  }
-
-  header {
-    padding: 2rem 1.5rem 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .header-inner {
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  .logo {
-    font-family: 'Oswald', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  h1 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.05em;
-  }
-
-  .subtitle {
-    font-size: 13px;
-    color: var(--text3);
-    margin-top: 4px;
-  }
-
-  main {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-  }
-
-  .section-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--text3);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.4rem 1.2rem;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-    transition: border-color 0.2s, background 0.2s, transform 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .card:active {
-    transform: scale(0.97);
-  }
-
-  .card:hover {
-    border-color: var(--accent);
-    background: var(--bg3);
-  }
-
-  .card:hover::before {
-    opacity: 1;
-  }
-
-  .card-series {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .card-name {
-    font-family: 'Oswald', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.2;
-    margin-bottom: 10px;
-  }
-
-  .card-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .card-stat {
-    font-size: 11px;
-    color: var(--text3);
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .card-stat span {
-    color: var(--text2);
-  }
-
-  .card-arrow {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    font-size: 16px;
-    color: var(--text3);
-    transition: color 0.2s, transform 0.2s;
-  }
-
-  .card:hover .card-arrow {
-    color: var(--accent);
-    transform: translateX(3px);
-  }
-
-  footer {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--text3);
-    text-align: center;
-  }
-</style>
+<title>JUGGLER TOOLS</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="logo">Juggler Tools</div>
-    <h1>ブドウ逆算ツール</h1>
-    <p class="subtitle">回転数・ボーナス回数・差枚数からブドウ確率を逆算</p>
+<header class="site-header">
+  <div class="site-header__inner">
+    <h1 class="site-title">JUGGLER <span>TOOLS</span></h1>
+    <p class="site-sub">ブドウ確率 逆算ツール</p>
   </div>
 </header>
 
 <main>
-  <p class="section-label">機種を選択</p>
-  <div class="cards">
+  <div class="card-list">
 
-    <a class="card" href="machine.html?id=neo_aim">
-      <div class="card-series">6号機</div>
-      <div class="card-name">ネオ<br>アイム</div>
-      <div class="card-meta">
-        <div class="card-stat">BIG純増 <span>252枚</span></div>
-        <div class="card-stat">REG純増 <span>96枚</span></div>
-        <div class="card-stat">ブドウ <span>8枚</span></div>
+    <a class="machine-card" href="machine.html?id=neo_aim">
+      <div class="card__name">NEO AIMJUGGLER</div>
+      <div class="card__stats">
+        <div class="card__stat">
+          <span class="card__stat-label">BIG</span>
+          <span class="card__stat-val">252枚</span>
+        </div>
+        <div class="card__stat">
+          <span class="card__stat-label">REG</span>
+          <span class="card__stat-val">96枚</span>
+        </div>
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card__arrow">→</div>
     </a>
 
-    <a class="card" href="machine.html?id=go_go">
-      <div class="card-series">6号機</div>
-      <div class="card-name">ゴー<br>ゴージャグ</div>
-      <div class="card-meta">
-        <div class="card-stat">BIG純増 <span>240枚</span></div>
-        <div class="card-stat">REG純増 <span>96枚</span></div>
-        <div class="card-stat">ブドウ <span>8枚</span></div>
+    <a class="machine-card" href="machine.html?id=go_go">
+      <div class="card__name">GOGO JUGGLER 3</div>
+      <div class="card__stats">
+        <div class="card__stat">
+          <span class="card__stat-label">BIG</span>
+          <span class="card__stat-val">240枚</span>
+        </div>
+        <div class="card__stat">
+          <span class="card__stat-label">REG</span>
+          <span class="card__stat-val">96枚</span>
+        </div>
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card__arrow">→</div>
     </a>
 
-    <a class="card" href="machine.html?id=my_jag">
-      <div class="card-series">6号機</div>
-      <div class="card-name">マイ<br>ジャグラー</div>
-      <div class="card-meta">
-        <div class="card-stat">BIG純増 <span>240枚</span></div>
-        <div class="card-stat">REG純増 <span>96枚</span></div>
-        <div class="card-stat">ブドウ <span>8枚</span></div>
+    <a class="machine-card" href="machine.html?id=my_jag">
+      <div class="card__name">MY JUGGLER 5</div>
+      <div class="card__stats">
+        <div class="card__stat">
+          <span class="card__stat-label">BIG</span>
+          <span class="card__stat-val">240枚</span>
+        </div>
+        <div class="card__stat">
+          <span class="card__stat-label">REG</span>
+          <span class="card__stat-val">96枚</span>
+        </div>
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card__arrow">→</div>
     </a>
 
-    <a class="card" href="machine.html?id=mr_jag">
-      <div class="card-series">6号機</div>
-      <div class="card-name">ミスター<br>ジャグラー</div>
-      <div class="card-meta">
-        <div class="card-stat">BIG純増 <span>240枚</span></div>
-        <div class="card-stat">REG純増 <span>96枚</span></div>
-        <div class="card-stat">ブドウ <span>8枚</span></div>
+    <a class="machine-card" href="machine.html?id=mr_jag">
+      <div class="card__name">MR. JUGGLER</div>
+      <div class="card__stats">
+        <div class="card__stat">
+          <span class="card__stat-label">BIG</span>
+          <span class="card__stat-val">240枚</span>
+        </div>
+        <div class="card__stat">
+          <span class="card__stat-label">REG</span>
+          <span class="card__stat-val">96枚</span>
+        </div>
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card__arrow">→</div>
     </a>
 
   </div>
 </main>
-
-<footer>
-  ※ 計算結果はあくまで推定値です
-</footer>
 
 </body>
 </html>
