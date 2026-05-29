@@ -5,7 +5,7 @@ const MACHINES = {
     regBonus: 96,
     grapeCoins: 8,
     replayProb: 1 / 7.298,
-    cherryProb: 1 / 33.2,
+    cherryCoef: 0.040403,
     settings: [
       { label: '1', prob: 1 / 6.02408 },
       { label: '2', prob: 1 / 6.02408 },
@@ -21,7 +21,7 @@ const MACHINES = {
     regBonus: 96,
     grapeCoins: 8,
     replayProb: 1 / 7.298,
-    cherryProb: 1 / 32.2,
+    cherryCoef: 0.037363,
     settings: [
       { label: '1', prob: 1 / 6.24986 },
       { label: '2', prob: 1 / 6.20019 },
@@ -37,7 +37,7 @@ const MACHINES = {
     regBonus: 96,
     grapeCoins: 8,
     replayProb: 1 / 7.298,
-    cherryProb: 1 / 34.0,
+    cherryCoef: 0.042208,
     settings: [
       { label: '1', prob: 1 / 5.91000 },
       { label: '2', prob: 1 / 5.86977 },
@@ -53,7 +53,7 @@ const MACHINES = {
     regBonus: 96,
     grapeCoins: 8,
     replayProb: 1 / 7.298,
-    cherryProb: 1 / 37.236,
+    cherryCoef: 0.079928,
     settings: [
       { label: '1', prob: 1 / 6.24212 },
       { label: '2', prob: 1 / 6.18381 },
@@ -93,7 +93,7 @@ function calculate() {
   const totalPayout = insert + diffCoins;
   const bonusGain   = bigCount * machine.bigBonus + regCount * machine.regBonus;
   const replayGain  = (totalGames * machine.replayProb) * 3;
-  const cherryGain  = (totalGames * machine.cherryProb) * 1;
+  const cherryGain  = totalGames * machine.cherryCoef;
   const grapeGain   = totalPayout - bonusGain - replayGain - cherryGain;
 
   if (grapeGain <= 0) {
